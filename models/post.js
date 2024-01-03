@@ -10,7 +10,7 @@ const PostSchema = new Schema({
     type: Boolean,
     default: false,
   },
-  timestamp: { type: Date },
+  timestamp: { type: Date, required: true },
 });
 
 PostSchema.virtual("url").get(function () {
