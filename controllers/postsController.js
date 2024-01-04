@@ -18,7 +18,15 @@ exports.post_list = asyncHandler(async (req, res, next) => {
 
 // Send details of specified Post on GET.
 exports.post_detail = asyncHandler(async (req, res, next) => {
-  res.send({ message: "Not yet implemented" });
+  const post = await Post.findById(req.params.id).exec();
+
+  if (!post) {
+    const err = new Error("Post not found");
+    err.status = 404;
+    return next(err);
+  }
+
+  res.send(post);
 });
 
 // Handle Post update on PUT.
