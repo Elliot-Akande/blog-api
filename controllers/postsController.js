@@ -1,5 +1,4 @@
 const Post = require("../models/post");
-const Author = require("../models/author");
 const asyncHandler = require("express-async-handler");
 
 // Hande Post creation on POST.
