@@ -63,5 +63,14 @@ exports.post_update = asyncHandler(async (req, res, next) => {
 
 // Handle Post deletion on DELETE.
 exports.post_delete = asyncHandler(async (req, res, next) => {
-  res.send({ message: "Not yet implemented" });
+  const post = await Post.findById(req.params.id).exec();
+
+  if (!post) {
+    const err = new Error("Invalid Post ID");
+    err.status = 404;
+    return next(err);
+  }
+
+  await Post.findByIdAndDelete(req.params.id);
+  res.status(204).send();
 });
