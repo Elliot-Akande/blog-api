@@ -22,6 +22,8 @@ async function main() {
 }
 
 // Set up passport
+
+// Local Strategy
 passport.use(
   new LocalStrategy(async (username, password, done) => {
     try {
