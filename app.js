@@ -9,6 +9,7 @@ const bcrypt = require("bcryptjs");
 const Author = require("./models/author");
 
 const postsRouter = require("./routes/posts");
+const authRouter = require("./routes/auth");
 
 // Set up mongoose connection
 const mongoose = require("mongoose");
@@ -48,6 +49,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/posts", postsRouter);
+app.use("/", authRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
