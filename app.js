@@ -8,6 +8,7 @@ const passport = require("passport");
 const postsRouter = require("./routes/posts");
 const authRouter = require("./routes/auth");
 
+const postsController = require("./controllers/postsController");
 
 require("./passportConfig");
 
@@ -28,6 +29,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
+
+// READ all Posts from author.
+app.get(
+  "/author/:id/posts",
+  passport.authenticate("jwt", { session: false }),
+  postsController.author_post_list
+);
 
 app.use("/posts", postsRouter);
 app.use("/", authRouter);
