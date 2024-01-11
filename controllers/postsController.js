@@ -38,6 +38,24 @@ exports.post_list = asyncHandler(async (req, res, next) => {
   res.send(allPosts);
 });
 
+// Send list of all Author's Posts on GET.
+exports.author_post_list = asyncHandler(async (req, res, next) => {
+  // Check user is specified Author
+  if (req.params.id !== req.user) {
+    const err = new Error(
+      "You are not authorized to access the requested resource."
+    );
+    err.status = 403;
+    return next(err);
+  }
+
+  const allPosts = await Post.find({ author: req.params.id })
+    .populate("author", "username")
+    .exec();
+
+  res.send(allPosts);
+});
+
 // Send details of specified Post on GET.
 exports.post_detail = asyncHandler(async (req, res, next) => {
   const post = await Post.findById(req.params.id).exec();
