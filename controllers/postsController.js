@@ -115,10 +115,16 @@ exports.post_update = [
 // Handle Post deletion on DELETE.
 exports.post_delete = asyncHandler(async (req, res, next) => {
   const post = await Post.findById(req.params.id).exec();
-
   if (!post) {
-    const err = new Error("Invalid Post ID");
+    const err = new Error("Post not found");
     err.status = 404;
+    return next(err);
+  }
+
+  // Check user is Post Author
+  if (post.author.toString() !== req.user) {
+    const err = new Error("You cannot delete a Post that you did not create.");
+    err.status = 403;
     return next(err);
   }
 
