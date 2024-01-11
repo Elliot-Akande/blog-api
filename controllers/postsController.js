@@ -3,20 +3,13 @@ const Author = require("../models/author");
 const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
 
-// Hande Post creation on POST.
+// Handle Post creation on POST.
 exports.post_create = [
   body("title", "Title must be present").trim().isLength({ min: 1 }).escape(),
   body("content", "Post Content must be present")
     .trim()
     .isLength({ min: 1 })
     .escape(),
-  body("author", "Author ID must be present")
-    .trim()
-    .isLength({ min: 1 })
-    .custom(async (value) => {
-      const author = await Author.findById(value);
-      if (!author) throw new Error("Invalid Author ID");
-    }),
 
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
@@ -26,9 +19,9 @@ exports.post_create = [
     }
 
     const post = new Post({
-      author: req.body.author,
       title: req.body.title,
       content: req.body.content,
+      author: req.user,
       timestamp: new Date(),
     });
     post.save();
