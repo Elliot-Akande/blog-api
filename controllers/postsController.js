@@ -31,7 +31,9 @@ exports.post_create = [
 
 // Send list of all published Posts on GET.
 exports.post_list = asyncHandler(async (req, res, next) => {
-  const allPosts = await Post.find().populate("author", "username").exec();
+  const allPosts = await Post.find({ isPublished: true })
+    .populate("author", "username")
+    .exec();
 
   res.send(allPosts);
 });
