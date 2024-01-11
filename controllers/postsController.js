@@ -70,9 +70,47 @@ exports.post_detail = asyncHandler(async (req, res, next) => {
 });
 
 // Handle Post update on PUT.
-exports.post_update = asyncHandler(async (req, res, next) => {
-  res.send({ message: "Not yet implemented" });
-});
+exports.post_update = [
+  body("title", "Title must be present").trim().isLength({ min: 1 }).escape(),
+  body("content", "Post Content must be present")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("isPublished", "isPublished must be a boolean value").isBoolean(),
+
+  asyncHandler(async (req, res, next) => {
+    const post = await Post.findById(req.params.id).exec();
+    if (!post) {
+      const err = new Error("Post not found");
+      err.status = 404;
+      return next(err);
+    }
+
+    // Check user is Post Author.
+    if (post.author.toString() !== req.user) {
+      const err = new Error(
+        "You cannot update a Post that you did not create."
+      );
+      err.status = 403;
+      return next(err);
+    }
+
+    // Validate body.
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.status(400).send(errors.array());
+      return;
+    }
+
+    // Perform Update.
+    post.title = req.body.title;
+    post.content = req.body.content;
+    post.isPublished = req.body.isPublished;
+    post.save();
+
+    res.send(post);
+  }),
+];
 
 // Handle Post deletion on DELETE.
 exports.post_delete = asyncHandler(async (req, res, next) => {
