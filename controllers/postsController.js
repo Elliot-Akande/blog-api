@@ -71,7 +71,7 @@ exports.post_detail = asyncHandler(async (req, res, next) => {
     passport.authenticate("jwt", { session: false }, (err, user, info) => {
       if (!user || user !== post.author.toString()) {
         const error = new Error(
-          "You are not authorized to access the requested resource"
+          "You are not authorized to access the requested resource."
         );
         error.status = 403;
         return next(error);
@@ -136,7 +136,9 @@ exports.post_delete = asyncHandler(async (req, res, next) => {
 
   // Check user is Post Author
   if (post.author.toString() !== req.user) {
-    const err = new Error("You cannot delete a Post that you did not create.");
+    const err = new Error(
+      "You are not authorized to delete the requested resource."
+    );
     err.status = 403;
     return next(err);
   }
