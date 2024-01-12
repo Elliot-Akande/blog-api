@@ -2,6 +2,7 @@ const Post = require("../models/post");
 const Author = require("../models/author");
 const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
+const passport = require("passport");
 
 // Handle Post creation on POST.
 exports.post_create = [
@@ -59,11 +60,23 @@ exports.author_post_list = asyncHandler(async (req, res, next) => {
 // Send details of specified Post on GET.
 exports.post_detail = asyncHandler(async (req, res, next) => {
   const post = await Post.findById(req.params.id).exec();
-
   if (!post) {
     const err = new Error("Post not found");
     err.status = 404;
     return next(err);
+  }
+
+  // Only Author can view unpublished Post
+  if (!post.isPublished) {
+    passport.authenticate("jwt", { session: false }, (err, user, info) => {
+      if (!user || user !== post.author.toString()) {
+        const error = new Error(
+          "You are not authorized to access the requested resource"
+        );
+        error.status = 403;
+        return next(error);
+      }
+    })(req, res, next);
   }
 
   res.send(post);
